@@ -1,8 +1,8 @@
 calc_snp_stats <- function(geno)
 {
-     ## Francisco Jose de Novais modified from http://evachan.org
+     ## Modified by Francisco Jose de Novais from http://evachan.org
      ## Created: 01/06/15
-     ## Last Modified: 21/10/12
+     ## Last Modified: 24/07/2017
      ##
      ## Function to calculate basic stats on SNPs, including: allele frequency, MAF, and exact estimate of HWE
      ##
