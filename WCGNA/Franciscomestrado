@@ -286,9 +286,9 @@ color = c(rep ("brown",8), rep ("orange", 8))
 barplot(MEs.total.turq, col=color,space=c(rep(0.1,7), 0.5, rep(0.1,6)), cex.axis=1.5)
 title(main = list("Turquoise Module", font = 2), cex.main=2, ylab="intensity (module eigengene)", cex.lab=1.5)
 
-write.table (genes.blue, "/Users/novai/Desktop/RESULTADOS/wgcna/negativo/bluemodule.txt", sep="\t")
-write.table (genes.grey60, "/Users/novai/Desktop/wgcna/genesGrey.txt", sep="\t")
-write.table (genes.turquoise, "../../../../../../../RESULTADOS/wgcna/positivo/genesTurquoise.txt", sep="\t")
+write.table (genes.blue, "/Users//bluemodule.txt", sep="\t")
+write.table (genes.grey60, "/Users/.../wgcna/genesGrey.txt", sep="\t")
+write.table (genes.turquoise, "../genesTurquoise.txt", sep="\t")
 #
 #############################################
 #Network visualization using WGCNA functions#
@@ -372,7 +372,7 @@ cyt = exportNetworkToCytoscape(modTOM,
 #calcular intramodular connectivity
 IntraModularConn <- intramodularConnectivity(adjacency, moduleColors, scaleByMax = FALSE)
 IntraModularConn$moduleColors <- moduleColors
-write.table (IntraModularConn, "../../../../../../../RESULTADOS/wgcna/positivo/IntraModularConTURQUOISE.txt", sep="\t")
+write.table (IntraModularConn, "../../IntraModularCon.txt", sep="\t")
 
 #é isso!!
 q()
