@@ -17,25 +17,24 @@
 #
 library("xcms")
 #
-#NEGATIVE MODE
 #
-mzfiles <- list.files("../../Dados_mzML/calibration_tolerance0.005/NEGATIVE/" ,recursive = TRUE, full=T) # input files (step 1)
+mzfiles <- list.files("/PASTEPATH/" ,recursive = TRUE, full=T) # input files mzXML or mXML (step 1)
 mzfiles #check if all files were included
-xset <- xcmsSet(mzfiles,polarity = "negative",method="centWave", peakwidth=c(5,20),ppm=15, snthresh=5,lockMassFreq = 554.2615)  # peak picking/detection/ UPLC (GUO et al, 2015 for details)(step 2)
-  xset
+xset <- xcmsSet(mzfiles,polarity = "Positive//Negative",method="centWave//profile", peakwidth=c(5,20),ppm=15, snthresh=5,lockMassFreq = 554.2615)  # peak picking/detection/ UPLC (GUO et al, 2015 for details)(step 2)
+  xset 
 xsg <- group(xset, bw=3)    # peak alignment with plots (add sleep class = number) (step 3.1)  
   xsg
 xsg1 <- retcor(xsg, method="loess",span=0.67,family = "gaussian", plottype="deviation") # retention time correction (step 3.2) also plot the result
   xsg1
 xsg2 <- group(xsg1, bw=3)   # re-align (step 3.3)
   xsg2
-xsg3 <- fillPeaks(xsg2)  # filling in missing peak data (step 4)
+xsg3 <- fillPeaks(xsg2)  # filling in missing peak data (step 4) ##Need a good memory
   xsg3
 #
-reporttab <- diffreport (xsg2, "HRFI", "LRFI", "STATSNEG", 10, metlin=0.15)# for statistical tab
-  reporttab
-write.csv(file="../../../../../../reportttab.csv", reporttab)# save statistical with compounds
-ver<-peakTable(xsg3, filebase="peakList")
+#reporttab <- diffreport (xsg2, "HRFI", "LRFI", "STATSNEG", 10, metlin=0.15)# for statistical tab ##Need a good memory
+#  reporttab
+#write.csv(file="../../../../../../reportttab.csv", reporttab) # save statistical with compounds
+#check<-peakTable(xsg3, filebase="peakList")
 #
 dat <- groupval(xsg2, "medret", "into")  # get peak intensity matrix (step 5)
   dat <- rbind(group = as.character(phenoData(xsg2)$class), dat)  # add group label
@@ -44,10 +43,14 @@ write.csv (file="../NEGATIVE/teste.csv",dat)  # save the data to CSV file
 dat1 <- groupnames(xsg3, mzdec = 4, rtdec = 4)#head para o arquivo final
 write.csv (file="../../../../../../head.csv",dat1)
 #
+#############################
+#     CAMERA-ANNOTATION     #
+#############################
+#
 library("CAMERA")#Annotation
 library(faahKO)
 #Create an xsAnnotate object
-xsa <- xsAnnotate(xsg2,polarity = "negative")
+xsa <- xsAnnotate(xsg2,polarity = "negative//positive")
 #Group after RT value of the xcms grouped peak
 xsaF <- groupFWHM(xsa, perfwhm=0.6)
 #Annotate isotopes
@@ -55,53 +58,14 @@ xsaFI <- findIsotopes(xsaF, mzabs = 0.01)
 #Verify grouping
 xsaC <- groupCorr(xsaFI,cor_eic_th = 0.75 )
 #Annotate adducts
-xsaFA <- findAdducts(xsaFI, polarity="negative")
+xsaFA <- findAdducts(xsaFI, polarity="negative//positive")
 #Get final peaktable and store on harddrive
 peaklist <- getPeaklist(xsaFA)
 write.csv(peaklist,file="../mzXML-Centwave/result_CAMERA.csv")
 plotEICs(xsaFA, pspec=2, maxlabel=5)
 #
 #
-#POSITIVE MODE
-#
-library("xcms")
-pmzfiles <- list.files("../../novai/Desktop/" ,recursive = TRUE, full=T) # input files (step 1)
-pmzfiles #check if all files were included
-pxset <- xcmsSet(pmzfiles,polarity = "positive",method="centWave", peakwidth=c(5,20),ppm=20, snthresh=10,lockMassFreq = 556.2771)  # peak picking/detection/ UPLC (GUO et al, 2015 for details)(step 2)
-pxset
-pxsg <- group(pxset, bw=3)    # peak alignment with plots (step 3.1)  
-pxsg
-pxsg1 <- retcor(pxsg, method="loess",family = "gaussian", plottype="deviation") # retention time correction (step 3.2) also plot the result
-pxsg1
-pxsg2 <- group(pxsg1, bw=3)     # re-align (step 3.3)
-pxsg2
-pxsg3 <- fillPeaks(pxsg2)  # filling in missing peak data (step 4)
-pxsg3
-#
-preporttab <- diffreport (pxsg2, "HRFI", "LRFI", "STATSPOS", 10, metlin=0.15)# for statistical tab
-preporttab
-write.csv(file="../../../../csv", preporttab)# save statistical with compounds
-#
-#
-library("CAMERA")#Annotation
-#Create an xsAnnotate object
-xsa <- xsAnnotate(pxsg2, polarity = "positive")
-#Group after RT value of the xcms grouped peak
-xsaF <- groupFWHM(xsa, perfwhm=0.6)
-#Annotate isotopes
-xsaFI <- findIsotopes(xsaF,mzabs = 0.01)
-#Verify grouping
-xsaC <- groupCorr(xsaFI, cor_eic_th = 0.75)
-#Annotate adducts
-pxsaFA <- findAdducts(xsaC, polarity="positive")
-#Get final peaktable and store on hard drive
-peaklist <- getPeaklist(pxsaFA)
-write.csv(peaklist,file="../Desktop/.csv")
-plotEICs(xsaFA, pspec=2, maxlabel=5)
-
-
-#
-#GUO, L. et al. Three plasma metabolite signatures for diagnosing high altitude pulmonary edema.Sci Rep. 2015 Oct 13;5:15126. doi: 10.1038/srep15126.
+  #GUO, L. et al. Three plasma metabolite signatures for diagnosing high altitude pulmonary edema.Sci Rep. 2015 Oct 13;5:15126. doi: 10.1038/srep15126.
 #
 #PLOTS
 #TIC
@@ -151,8 +115,5 @@ getTICs <- function(xcmsSet=NULL,files=NULL, pdfname="TICs.pdf",rt=c("raw","corr
 getTICs(xcmsSet=xsg1, pdfname="NEGATIVETICs.pdf",rt="corrected")
 #POSITIVE MODE
 getTICs(xcmsSet=pxsg3, pdfname="POSITIVETICs.pdf",rt="corrected")
-
-
-
+#
 mzfiles <- list.files('C:/Users/' ,recursive = TRUE, full=T)
-> mzfiles <- list.files('C:/Users/' ,recursive = TRUE, full=T)
