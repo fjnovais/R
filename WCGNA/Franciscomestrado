@@ -1,20 +1,30 @@
-#instalation
-source("http://bioconductor.org/biocLite.R") 
-biocLite(c("AnnotationDbi", "impute", "GO.db", "preprocessCore")) 
-library(BiocInstaller)
-biocValid()
+##########################
+#   WCGNA-processing      #
+##########################
+#
+#by Francisco Jose de Novais
+#This script to perform modules of co-expression analysis.
+#
+#INSTALATION
+#source("http://bioconductor.org/biocLite.R") 
+#biocLite(c("AnnotationDbi", "impute", "GO.db", "preprocessCore")) 
+#library(BiocInstaller)
+#biocValid()
 #install.packages("WGCNA")
 #load
+#
+#
 library(WGCNA)
-options(stringsAsFactors = FALSE)
-#femData <- read.csv("LiverFemale3600.csv");
-datExpr0 <- as.data.frame(t(intensities[, -1]));#só deixe as concentrações, retire informações auxiliares e transpõe
-names(datExpr0) <- intensities$X1 #coloca os nomes das colunas como o nome dos genes (no meu caso, analitos)
-rownames(datExpr0) <- names(intensities)[-1];#coloca os nomes das linhas como nomes das amostras.
-#CHECAR OUTLIERS OU GENES COM MUITOS MISSING VALUES
+options(stringsAsFactors = FALSE) #use this command to avoid problems on data import step 
+#femData <- read.csv("intensitiesData.csv"); #preprocessing done and normalized data
+datExpr0 <- as.data.frame(t(intensitiesData[, -1]));#transpose data and just the intensities are keeped
+names(datExpr0) <- intensities$X1 #colummns names as mass-charge or genes names
+rownames(datExpr0) <- names(intensities)[-1];#lines as samples names
+#
+#CHECK OUTLIERS OR GENES WITH A LOT OF MISSING VALUES ##CHECAR OUTLIERS OU GENES COM MUITOS MISSING VALUES
 gsg <- goodSamplesGenes(datExpr0, verbose = 3);
-gsg$allOK #checa se não teve problemas de outliers
-if (!gsg$allOK)# SE FOR DIFERENTES, EXCLUA AS AMOSTRAS OU GENES QUE DERAM PROBLEMAS
+gsg$allOK #check outliers
+if (!gsg$allOK)# exlude genes or samples with problems
 {
   # Optionally, print the gene and sample names that were removed:
   if (sum(!gsg$goodGenes)>0)
@@ -24,15 +34,15 @@ if (!gsg$allOK)# SE FOR DIFERENTES, EXCLUA AS AMOSTRAS OU GENES QUE DERAM PROBLE
   # Remove the offending genes and samples from the data:
   datExpr0 = datExpr0[gsg$goodSamples, gsg$goodGenes]
 }
-#cluster das amostras para ver se tem algum outlier
+#Sample clusterization to detect outliers
 sampleTree <- hclust(dist(datExpr0), method = "average");
 ## Plot the sample tree: Open a graphic output window of size 12 by 9 inches
-sizeGrWindow(12,9)#dimensão do gráfico
+sizeGrWindow(12,9)#graphic dimmension 
 par(cex = 1);
 par(mar = c(0,4,2,0))
 plot(sampleTree, main = "Sample clustering to detect outliers", sub="", xlab="", cex.lab = 1.5,cex.axis = 1.5, cex.main = 2)
 #
-#EXCLUIR OUTLIER
+#EXCLUDE OUTLIER
 # Plot a line to show the cut
 abline(h = 80, col = "red");
 # Determine cluster under the line
@@ -40,24 +50,23 @@ clust <- cutreeStatic(sampleTree, cutHeight = 70, minSize = 10)
 table(clust)
 # clust 1 contains the samples we want to keep.
 keepSamples <- (clust==1)
-datExpr <- datExpr0[keepSamples, ]#esses são seus dados de concentração
+datExpr <- datExpr0[keepSamples, ]
 nGenes <- ncol(datExpr)
 nSamples <- nrow(datExpr)
 #
-#traitData = read.csv("ClinicalTraits.csv");#dados fenotípicos
+#traitData = read.csv("ClinicalTraits.csv") #phenotype data
 # remove columns that hold information we do not need.
 allTraits <- data.frame(Traits);
-allTraits <- allTraits[, c(2,4) ];#Coluna Mice é a amostra mesma da eexpressão
+allTraits <- allTraits[, c(2,4)]
 dim(allTraits)
 names(allTraits)
-
-# Form a data frame analogous to expression data that will hold the clinical traits.
+#
+# Form a data frame analogous to expression data that will hold the phenotype traits.
 femaleSamples <- rownames(datExpr);
 traitRows <- match(femaleSamples, allTraits$ANIMAL_ID);
 CAR <- allTraits[traitRows,-1]
 datTraits <- data.frame(CAR)
 rownames(datTraits) <- rownames(datExpr)
-
 collectGarbage();
 #
 # Re-cluster samples
@@ -69,8 +78,9 @@ plotDendroAndColors(sampleTree2, traitColors,
                     groupLabels = names(datTraits),
                     main = "Sample dendrogram and trait heatmap")
 #
+#
 #################################
-#NETWORK ANALYSIS STEP-BY-STEP###
+# NETWORK ANALYSIS STEP-BY-STEP #
 #################################
 # Step-by-step network construction and module detection
 #Choosing the soft-thresholding power: analysis of network topology
@@ -136,9 +146,9 @@ sizeGrWindow(7, 6)
 plot(METree, main = "Clustering of module eigengenes",
      xlab = "", sub = "")
 #
-varExpModules <- propVarExplained(datExpr,dynamicColors, MEs, corFnc = "cor", corOptions = "use = 'p'")#conferir a proporção da variância explicada pela primeira componente principal de cada modulo
-
-MEDissThres = 0 #0.75 de correlação
+varExpModules <- propVarExplained(datExpr,dynamicColors, MEs, corFnc = "cor", corOptions = "use = 'p'")##conferir a proporção da variância explicada pela primeira componente principal de cada modulo
+#
+MEDissThres = 0 #0.75 of correlation
 # Plot the cut line into the dendrogram
 abline(h=MEDissThres, col = "red")
 # Call an automatic merging function
@@ -147,7 +157,7 @@ merge = mergeCloseModules(datExpr, dynamicColors, cutHeight = MEDissThres, verbo
 mergedColors = merge$colors;
 # Eigengenes of the new merged modules:
 mergedMEs = merge$newMEs;
-#ver no gráfico anterior se houveram mudanças e JUNTA MÓDULOS muito parecidos
+##Put together similar modules
 sizeGrWindow(7, 6)
 #pdf(file = "Plots/geneDendro-3.pdf", wi = 9, he = 6)
 plotDendroAndColors(geneTree, cbind(mergedColors),
@@ -155,14 +165,14 @@ plotDendroAndColors(geneTree, cbind(mergedColors),
                     dendroLabels = FALSE, hang = 0.03,
                     addGuide = TRUE, guideHang = 0.05)
 #dev.off()
-propVarExplained(datExpr,mergedColors, mergedMEs, corFnc = "cor", corOptions = "use = 'p'")#conferir a proporção da variância explicada pela primeira componente principal de cada modulo
+propVarExplained(datExpr,mergedColors, mergedMEs, corFnc = "cor", corOptions = "use = 'p'")#check the proportion of variance explained by first component in each module
 # Rename to moduleColors
 moduleColors = mergedColors
 # Construct numerical labels corresponding to the colors
 colorOrder = c("grey", standardColors(50));
 moduleLabels = match(moduleColors, colorOrder)-1;
 MEs = mergedMEs;
-#Relating modules to external clinical traits and identifying important genes
+#Relating modules to external traits and identifying important genes
 # Define numbers of genes and samples
 nGenes = ncol(datExpr);
 nSamples = nrow(datExpr);
@@ -245,16 +255,16 @@ geneInfo = geneInfo0[geneOrder, ]
 write.csv(geneInfo, file = "../../../../../../../RESULTADOS/wgcna/positivo/analitoInfo.csv")
 #
 #
-#Selecionar por module membership > 0.6 no mudulo e < 0.6 nos outros modulos
-#DECIDA SE VAI APLICAR OU NÃO
+#SELECTING MMM > 0.6 intramodule and < 0.6 in others modules
+#DECIDE IF YOU WILL APPLY THIS PART OR NOT!!!!
 genes.total <- data.frame(geneModuleMembership$MMturquoise >0.5 & moduleColors=="turquoise" & (apply(!geneModuleMembership[,c(1:18,20:22)] <0.5,1,sum)))
-
+#
 colnames(genes.total) <- c('MMturquoise')
-
+#
 test.total<-cbind(genes.total, t(datExpr))
 #Select only the genes which are in one of the modules:
 genes.total <- test.total[test.total$MMturquoise== T,]
-
+#
 #select genes which are in one particular module:
 genes.turquoise <-test.total[test.total$MMturquoise==T,]
 #
@@ -269,15 +279,15 @@ MEs.totalselect <- t(MEs)
 MEs.total.blue <- MEs.totalselect[5,]
 MEs.total.darktur <- MEs.totalselect[7,]
 MEs.total.turq <- MEs.totalselect[18,]
-
-
+#
+#
 #Create a barplot of one module, with samples on the x-axis (one bar per sample), colored per group (in my case three groups of 12 samples).
-#(Itâ€™s a barplot which is also in my paper about sheep muscling)
+#(Its a barplot which is also in my paper about sheep muscling)
 color = c(rep ("black",8), rep ("grey60", 8))
 barplot(MEs.total.grey, col=color,space=c(rep(0.1,7), 0.5, rep(0.1,6)), cex.axis=1.5)
 title(main = list("Grey60 Module", font = 2), cex.main=2, ylab="intensity (module eigengene)", cex.lab=1.5)
-
-#tem que arrumar a ordem das amostras pra fazer esse!!
+#
+##tem que arrumar a ordem das amostras pra fazer esse!!
 color = c(rep ("darkgreen",8), rep ("green", 8))
 barplot(MEs.total.darktur, col=color,space=c(rep(0.1,7), 0.5, rep(0.1,6)), cex.axis=1.5)
 title(main = list("DarkTurq Module", font = 2), cex.main=2, ylab="intensity (module eigengene)", cex.lab=1.5)
@@ -285,14 +295,17 @@ title(main = list("DarkTurq Module", font = 2), cex.main=2, ylab="intensity (mod
 color = c(rep ("brown",8), rep ("orange", 8))
 barplot(MEs.total.turq, col=color,space=c(rep(0.1,7), 0.5, rep(0.1,6)), cex.axis=1.5)
 title(main = list("Turquoise Module", font = 2), cex.main=2, ylab="intensity (module eigengene)", cex.lab=1.5)
-
+#
 write.table (genes.blue, "/Users//bluemodule.txt", sep="\t")
 write.table (genes.grey60, "/Users/.../wgcna/genesGrey.txt", sep="\t")
 write.table (genes.turquoise, "../genesTurquoise.txt", sep="\t")
 #
+#
 #############################################
 #Network visualization using WGCNA functions#
 #############################################
+#
+#
 #Visualizing the gene network
 # Calculate topological overlap anew: this could be done more efficiently by saving the TOM
 # calculated during module detection, but let us do it again here.
@@ -307,7 +320,7 @@ write.table (genes.turquoise, "../genesTurquoise.txt", sep="\t")
 #
 #
 ###############
-# CAR##########
+#     CAR     #
 ###############
 # Isolate RFI from the traits
 #RIG = as.data.frame(datTraits$RIG);
@@ -317,9 +330,8 @@ MET = orderMEs(cbind(MEs, RFI))
 # Plot the relationships among the eigengenes and the trait
 sizeGrWindow(5,7.5);
 par(cex = 0.9)
-plotEigengeneNetworks(MET, "", marDendro = c(0,4,1,2), marHeatmap = c(3,4,1,2), cex.lab = 0.8, xLabelsAngle
-                      = 90)
-
+plotEigengeneNetworks(MET, "", marDendro = c(0,4,1,2), marHeatmap = c(3,4,1,2), cex.lab= 0.8, xLabelsAngle= 90)
+#
 # Plot the dendrogram
 sizeGrWindow(6,6);
 par(cex = 1.0)
@@ -329,11 +341,11 @@ plotEigengeneNetworks(MET, "Eigengene dendrogram", marDendro = c(0,4,2,0),
 par(cex = 1.0)
 plotEigengeneNetworks(MET, "Eigengene adjacency heatmap", marHeatmap = c(3,4,2,2),
                       plotDendrograms = FALSE, xLabelsAngle = 90)
-
+#
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 #Exporting a gene network to external visualization software#
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#Pamela Almeida Alexandre
+#Developed by Pamela Almeida Alexandre
 #
 #names <- read.table ("names.txt", sep="\t")
 #names (names) = c ("geneID", "geneNames")
@@ -341,14 +353,14 @@ plotEigengeneNetworks(MET, "Eigengene adjacency heatmap", marHeatmap = c(3,4,2,2
 #names (annot) <- c ("geneID")
 #annot <- merge (geneID, names, by="geneID", all=T)
 #write.table (annot, "annot.txt", sep="\t")
-
+#
 # Read in the annotation file
 #annot = read.table ("annot.txt", sep="\t", header=T);
-
-############################################################
-#Exporting to Cytoscape#####################################
+#
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#                   Exporting to Cytoscape                 #
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+#
 # Select modules
 modules <- c("turquoise");
 # Select module probes
@@ -374,7 +386,7 @@ IntraModularConn <- intramodularConnectivity(adjacency, moduleColors, scaleByMax
 IntraModularConn$moduleColors <- moduleColors
 write.table (IntraModularConn, "../../IntraModularCon.txt", sep="\t")
 
-#é isso!!
+#That's all Folks!!
 q()
 
 
