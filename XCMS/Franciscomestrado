@@ -34,7 +34,7 @@ xsg3 <- fillPeaks(xsg2)  # filling in missing peak data (step 4)
 #
 reporttab <- diffreport (xsg2, "HRFI", "LRFI", "STATSNEG", 10, metlin=0.15)# for statistical tab
   reporttab
-write.csv(file="../../../../../../TESTE-NEGATIVO/MS1/RESULTADOS/CALIBRARED/reportttab.csv", reporttab)# save statistical with compounds
+write.csv(file="../../../../../../reportttab.csv", reporttab)# save statistical with compounds
 ver<-peakTable(xsg3, filebase="peakList")
 #
 dat <- groupval(xsg2, "medret", "into")  # get peak intensity matrix (step 5)
@@ -42,7 +42,7 @@ dat <- groupval(xsg2, "medret", "into")  # get peak intensity matrix (step 5)
 write.csv (file="../NEGATIVE/teste.csv",dat)  # save the data to CSV file
 #
 dat1 <- groupnames(xsg3, mzdec = 4, rtdec = 4)#head para o arquivo final
-write.csv (file="../../../../../../TESTE-NEGATIVO/MS1/no_calibration/head.csv",dat1)
+write.csv (file="../../../../../../head.csv",dat1)
 #
 library("CAMERA")#Annotation
 library(faahKO)
@@ -65,7 +65,7 @@ plotEICs(xsaFA, pspec=2, maxlabel=5)
 #POSITIVE MODE
 #
 library("xcms")
-pmzfiles <- list.files("../../novai/Desktop/FRANCISCO/PROFISSIONAL/FAPESP/MESTRADO/DADOS/APEX/Dados Apex/mzXML/POSITIVE/" ,recursive = TRUE, full=T) # input files (step 1)
+pmzfiles <- list.files("../../novai/Desktop/" ,recursive = TRUE, full=T) # input files (step 1)
 pmzfiles #check if all files were included
 pxset <- xcmsSet(pmzfiles,polarity = "positive",method="centWave", peakwidth=c(5,20),ppm=20, snthresh=10,lockMassFreq = 556.2771)  # peak picking/detection/ UPLC (GUO et al, 2015 for details)(step 2)
 pxset
@@ -80,7 +80,7 @@ pxsg3
 #
 preporttab <- diffreport (pxsg2, "HRFI", "LRFI", "STATSPOS", 10, metlin=0.15)# for statistical tab
 preporttab
-write.csv(file="../../../../DADOS DO MESTRADO/Dados Apex/Dados-csv/xcms-positive/statspovitive.csv", preporttab)# save statistical with compounds
+write.csv(file="../../../../csv", preporttab)# save statistical with compounds
 #
 #
 library("CAMERA")#Annotation
@@ -96,7 +96,7 @@ xsaC <- groupCorr(xsaFI, cor_eic_th = 0.75)
 pxsaFA <- findAdducts(xsaC, polarity="positive")
 #Get final peaktable and store on hard drive
 peaklist <- getPeaklist(pxsaFA)
-write.csv(peaklist,file="../Desktop/FRANCISCO/PROFISSIONAL/FAPESP/MESTRADO/DADOS/APEX/Dados Apex/mzXML/mzXML-Centwave/result_CAMERA_pos.csv")
+write.csv(peaklist,file="../Desktop/.csv")
 plotEICs(xsaFA, pspec=2, maxlabel=5)
 
 
@@ -154,5 +154,5 @@ getTICs(xcmsSet=pxsg3, pdfname="POSITIVETICs.pdf",rt="corrected")
 
 
 
-mzfiles <- list.files('C:/Users/novai/Desktop/FRANCISCO/PROFISSIONAL/FAPESP/MESTRADO/DADOS/APEX/Dados Apex/Dados_mzML/calibration_tolerance0.005/NEGATIVE' ,recursive = TRUE, full=T)
-> mzfiles <- list.files('C:/Users/novai/Desktop/FRANCISCO/PROFISSIONAL/FAPESP/MESTRADO/DADOS/APEX/Dados Apex/mzXML/NEGATIVE' ,recursive = TRUE, full=T)
+mzfiles <- list.files('C:/Users/' ,recursive = TRUE, full=T)
+> mzfiles <- list.files('C:/Users/' ,recursive = TRUE, full=T)
