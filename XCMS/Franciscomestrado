@@ -65,9 +65,9 @@ write.csv(peaklist,file="../mzXML-Centwave/result_CAMERA.csv")
 plotEICs(xsaFA, pspec=2, maxlabel=5)
 #
 #
-  #GUO, L. et al. Three plasma metabolite signatures for diagnosing high altitude pulmonary edema.Sci Rep. 2015 Oct 13;5:15126. doi: 10.1038/srep15126.
+#GUO, L. et al. Three plasma metabolite signatures for diagnosing high altitude pulmonary edema.Sci Rep. 2015 Oct 13;5:15126. doi: 10.1038/srep15126.
 #
-#PLOTS
+# CREATING PLOTS
 #TIC
 getTICs <- function(xcmsSet=NULL,files=NULL, pdfname="TICs.pdf",rt=c("raw","corrected")) {
   if (is.null(xcmsSet)) {
@@ -117,3 +117,6 @@ getTICs(xcmsSet=xsg1, pdfname="NEGATIVETICs.pdf",rt="corrected")
 getTICs(xcmsSet=pxsg3, pdfname="POSITIVETICs.pdf",rt="corrected")
 #
 mzfiles <- list.files('C:/Users/' ,recursive = TRUE, full=T)
+#
+#That's all Folks!!
+q()
