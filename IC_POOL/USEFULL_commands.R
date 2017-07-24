@@ -1,5 +1,5 @@
 ########################################
-#           GPSOB-ANALYSIS             #
+#           POOL-ANALYSIS             #
 ########################################
 #
 #By Francisco Novais
@@ -23,9 +23,6 @@ compair_freq <- rbind.data.frame(MAF_A,MAF_B)
 corfreq.case <- cor (compair_freq$p_top, compair_freq$freq.B.case, use= "pairwise.complete.obs")
 corfreq.control <- cor (compair_freq$p_low, compair_freq$freq.B.control, use= "pairwise.complete.obs")
 cor.rept1 <- cor (replicatas$GPT1.B.Allele.Freq,replicatas$GPT1.B.Allele.Freq.1,use= "pairwise.complete.obs" )
-cor.rept2 <- cor (replicatas$GPT2.B.Allele.Freq,replicatas$GPT2.B.Allele.Freq.1,use= "pairwise.complete.obs" )
-cor.repl1 <- cor (replicatas$GPL1.B.Allele.Freq,replicatas$GPL1.B.Allele.Freq.1,use= "pairwise.complete.obs" )
-cor.repl2 <- cor (replicatas$GPL2.B.Allele.Freq,replicatas$GPL2.B.Allele.Freq.1,use= "pairwise.complete.obs" )
 #
 #3-Plots between pool frequency and indivudial frequency
 plot (compair_freq$p_top~compair_freq$freq.B.case,xlab = "individual frequency", ylab = "pool frequency")
@@ -91,147 +88,6 @@ manhattan(subset(rank.pool, CHR==1), suggestiveline = F,genomewideline = F, cex=
 manhattan(subset(rank.ind, CHR==1), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-11:10), highlight =listsnps)
 manhattan(subset(same.signif.pool, CHR==1), suggestiveline = F,genomewideline = F, cex=0.93)
 manhattan(subset(same.signif.ind, CHR==1), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-6:5))
-#chr 02
-manhattan(subset(rank.pool, CHR==2), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==2), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-13:12),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==2), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-6:5))
-manhattan(subset(same.signif.ind, CHR==2), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-6:5))
-#chr 03
-manhattan(subset(rank.pool, CHR==3), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==3), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-9:8),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==3), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==3), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 04
-manhattan(subset(rank.pool, CHR==4), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==4), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-11:10),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==4), suggestiveline = F,genomewideline = F, cex=0.93)
-manhattan(subset(same.signif.ind, CHR==4), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-11:10))
-#chr 05
-manhattan(subset(rank.pool, CHR==5), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==5), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==5), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-6:5))
-manhattan(subset(same.signif.ind, CHR==5), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-6:5))
-#chr 06
-manhattan(subset(rank.pool, CHR==6), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==6), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-11:10),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==6), suggestiveline = F,genomewideline = F, cex=0.93)
-manhattan(subset(same.signif.ind, CHR==6), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-6:5))
-#chr 07
-manhattan(subset(rank.pool, CHR==7), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==7), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-10:9),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==7), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-6:5))
-manhattan(subset(same.signif.ind, CHR==7), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-6:5))
-#chr 08
-manhattan(subset(rank.pool, CHR==8), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==8), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-8:7),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==8), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-6:5))
-manhattan(subset(same.signif.ind, CHR==8), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-6:5))
-#chr 09
-manhattan(subset(rank.pool, CHR==9), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==9), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-8:7),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==9), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-6:5))
-manhattan(subset(same.signif.ind, CHR==9), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-6:5))
-#chr 10
-manhattan(subset(rank.pool, CHR==10), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps,ylim=range(1e-8:7))
-manhattan(subset(rank.ind, CHR==10), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-8:7),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==10), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==10), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 11
-manhattan(subset(rank.pool, CHR==11), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==11), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-9:8),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==11), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==11), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 12
-manhattan(subset(rank.pool, CHR==12), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps,ylim=range(1e-10:9))
-manhattan(subset(rank.ind, CHR==12), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-10:9),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==12), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==12), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 13
-manhattan(subset(rank.pool, CHR==13), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==13), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-9:8),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==13), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==13), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 14
-manhattan(subset(rank.pool, CHR==14), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==14), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==14), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==14), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 15
-manhattan(subset(rank.pool, CHR==15), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==15), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-15:14),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==15), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==15), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 16
-manhattan(subset(rank.pool, CHR==16), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==16), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-8:7),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==16), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==16), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 17
-manhattan(subset(rank.pool, CHR==17), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==17), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-8:7),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==17), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==17), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 18
-manhattan(subset(rank.pool, CHR==18), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==18), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-13:12),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==18), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==18), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 19
-manhattan(subset(rank.pool, CHR==19), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==19), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-8:7),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==19), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==19), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 20
-manhattan(subset(rank.pool, CHR==20), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==20), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-9:8),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==20), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==20), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 21
-manhattan(subset(rank.pool, CHR==21), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==21), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-8:7),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==21), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==21), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 22
-manhattan(subset(rank.pool, CHR==22), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps,ylim=range(1e-7:6))
-manhattan(subset(rank.ind, CHR==22), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==22), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==22), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 23
-manhattan(subset(rank.pool, CHR==23), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps,ylim=range(1e-7:6))
-manhattan(subset(rank.ind, CHR==23), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==23), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==23), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 24
-manhattan(subset(rank.pool, CHR==24), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps,ylim=range(1e-7:6))
-manhattan(subset(rank.ind, CHR==24), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==24), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==24), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 25
-manhattan(subset(rank.pool, CHR==25), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps,ylim=range(1e-7:6))
-manhattan(subset(rank.ind, CHR==25), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==25), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==25), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 26
-manhattan(subset(rank.pool, CHR==26), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps,ylim=range(1e-7:6))
-manhattan(subset(rank.ind, CHR==26), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==26), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==26), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 27
-manhattan(subset(rank.pool, CHR==27), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps,ylim=range(1e-7:6))
-manhattan(subset(rank.ind, CHR==27), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==27), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-7:6))
-manhattan(subset(same.signif.ind, CHR==27), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-7:6))
-#chr 28
-manhattan(subset(rank.pool, CHR==28), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps,ylim=range(1e-11:10))
-manhattan(subset(rank.ind, CHR==28), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-11:10),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==28), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-11:10))
-manhattan(subset(same.signif.ind, CHR==28), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-11:10))
-#chr 29
-manhattan(subset(rank.pool, CHR==29), suggestiveline = F,genomewideline = F, cex=0.93,highlight =listsnps)
-manhattan(subset(rank.ind, CHR==29), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-6:5),highlight =listsnps)
-manhattan(subset(same.signif.pool, CHR==29), suggestiveline = F,genomewideline = F, cex=0.93, ylim=range(1e-6:5))
-manhattan(subset(same.signif.ind, CHR==29), suggestiveline = F,genomewideline = F, cex=0.93,  ylim=range(1e-11:10))
-
 #
 #6-Ranking p-values
 rank.ind1<- subset.data.frame(manh.ind, subset= manh.ind$P < 0.01)
@@ -263,18 +119,17 @@ manhattan(geno1, col=c("black", "chocolate2"),suggestiveline = F,genomewideline 
 rank.geno<- subset.data.frame(geno1, subset= geno1$P < 0.01)
 teste<-merge.data.frame(rank.geno,rank.pool, by= "BP")
 #
-#
 # Basic plot of x and y :
 plot(x,y,col=rgb(0.4,0.4,0.8,0.6), pch=16 , cex=1.3 , xlab="" , ylab="") 
-
+#
 # Can we find a polynome that fit this function ?
 model=lm(y ~ x + I(x^2) + I(x^3))
-
+#
 # I can get the features of this model :
 summary(model)
 model$coefficients
 summary(model)$adj.r.squared
-
+#
 #For each value of x, I can get the value of y estimated by the model, and the confidence interval around this value.
 myPredict <- predict( model , interval="predict" )
 
