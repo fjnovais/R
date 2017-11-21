@@ -15,16 +15,16 @@
 #
 #
 library(WGCNA)
-options(stringsAsFactors = FALSE) #use this command to avoid problems on data import step 
-#femData <- read.csv("intensitiesData.csv"); #preprocessing done and normalized data
-datExpr0 <- as.data.frame(t(intensitiesData[, -1]));#transpose data and just the intensities are keeped
-names(datExpr0) <- intensities$X1 #colummns names as mass-charge or genes names
-rownames(datExpr0) <- names(intensities)[-1];#lines as samples names
+options(stringsAsFactors = FALSE) 
+#INPUTTRANSCRIPTOMICDATA <- read.csv("intensitiesData.csv"); APPLY THESE STEP IF NECESSARY
+datExpr0 <- as.data.frame(t(intensitiesData[, -1]));
+names(datExpr0) <- intensities$X1 
+rownames(datExpr0) <- names(intensities)[-1];
 #
 #CHECK OUTLIERS OR GENES WITH A LOT OF MISSING VALUES ##CHECAR OUTLIERS OU GENES COM MUITOS MISSING VALUES
 gsg <- goodSamplesGenes(datExpr0, verbose = 3);
-gsg$allOK #check outliers
-if (!gsg$allOK)# exlude genes or samples with problems
+gsg$allOK 
+if (!gsg$allOK)
 {
   # Optionally, print the gene and sample names that were removed:
   if (sum(!gsg$goodGenes)>0)
@@ -34,9 +34,7 @@ if (!gsg$allOK)# exlude genes or samples with problems
   # Remove the offending genes and samples from the data:
   datExpr0 = datExpr0[gsg$goodSamples, gsg$goodGenes]
 }
-#Sample clusterization to detect outliers
 sampleTree <- hclust(dist(datExpr0), method = "average");
-## Plot the sample tree: Open a graphic output window of size 12 by 9 inches
 sizeGrWindow(12,9)#graphic dimmension 
 par(cex = 1);
 par(mar = c(0,4,2,0))
@@ -54,7 +52,7 @@ datExpr <- datExpr0[keepSamples, ]
 nGenes <- ncol(datExpr)
 nSamples <- nrow(datExpr)
 #
-#traitData = read.csv("ClinicalTraits.csv") #phenotype data
+#INPUTPHENOTYPEDATA = read.csv("ClinicalTraits.csv") #phenotype data
 # remove columns that hold information we do not need.
 allTraits <- data.frame(Traits);
 allTraits <- allTraits[, c(2,4)]
@@ -64,8 +62,8 @@ names(allTraits)
 # Form a data frame analogous to expression data that will hold the phenotype traits.
 femaleSamples <- rownames(datExpr);
 traitRows <- match(femaleSamples, allTraits$ANIMAL_ID);
-CAR <- allTraits[traitRows,-1]
-datTraits <- data.frame(CAR)
+TRAIT <- allTraits[traitRows,-1]
+datTraits <- data.frame(TRAIT)
 rownames(datTraits) <- rownames(datExpr)
 collectGarbage();
 #
@@ -106,7 +104,7 @@ plot(sft$fitIndices[,1], sft$fitIndices[,5],
      main = paste("Mean connectivity"))
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 # Co-expression similarity and adjacency
-softPower = 7;
+softPower = USEHERETHENUMBER; #APPLY THE NUMBER FOR THE SOFTPOWER
 adjacency <- adjacency(datExpr, power = softPower);
 #Topological Overlap Matrix (TOM)
 # Turn adjacency into topological overlap
@@ -146,9 +144,9 @@ sizeGrWindow(7, 6)
 plot(METree, main = "Clustering of module eigengenes",
      xlab = "", sub = "")
 #
-varExpModules <- propVarExplained(datExpr,dynamicColors, MEs, corFnc = "cor", corOptions = "use = 'p'")##conferir a proporção da variância explicada pela primeira componente principal de cada modulo
+varExpModules <- propVarExplained(datExpr,dynamicColors, MEs, corFnc = "cor", corOptions = "use = 'p'")##CHECKING THE VARIANCE EXPLAINED BY FIRST COMPONENT OF THE MODULE
 #
-MEDissThres = 0 #0.75 of correlation
+MEDissThres = 0.25 #0.75 of correlation
 # Plot the cut line into the dendrogram
 abline(h=MEDissThres, col = "red")
 # Call an automatic merging function
@@ -190,7 +188,7 @@ dim(textMatrix) = dim(moduleTraitCor)
 par(mar = c(5, 9, 3, 3));
 # Display the correlation values within a heatmap plot
 labeledHeatmap(Matrix = moduleTraitCor,
-               xLabels = "RFI",
+                 xLabels = "TRAIT",
                yLabels = names(MEs),
                ySymbols = names(MEs),
                colorLabels = FALSE,
@@ -204,31 +202,31 @@ labeledHeatmap(Matrix = moduleTraitCor,
 #
 #Gene relationship to trait and important modules: Gene Significance and Module merbership
 # Define variable weight containing the weight column of datTrait
-RFI <- as.data.frame(datTraits$CAR);
-names(RFI) = "RFI"
+TRAIT <- as.data.frame(datTraits$TRAIT);
+names(TRAIT) = "TRAIT"
 # names (colors) of the modules
 modNames <- substring(names(MEs), 3)
 geneModuleMembership <- as.data.frame(cor(datExpr, MEs, use = "p"));
 MMPvalue <- as.data.frame(corPvalueStudent(as.matrix(geneModuleMembership), nSamples));
 names(geneModuleMembership) <- paste("MM", modNames, sep="");
 names(MMPvalue) <- paste("p.MM", modNames, sep="");
-geneTraitSignificance <- as.data.frame(cor(datExpr,RFI, use = "p"));
+geneTraitSignificance <- as.data.frame(cor(datExpr,TRAIT, use = "p"));
 GSPvalue = as.data.frame(corPvalueStudent(as.matrix(geneTraitSignificance), nSamples));
-names(geneTraitSignificance) = paste("GS.", names(RFI), sep="");
-names(GSPvalue) = paste("p.GS.", names(RFI), sep="");
+names(geneTraitSignificance) = paste("GS.", names(TRAIT), sep="");
+names(GSPvalue) = paste("p.GS.", names(TRAIT), sep="");
 #
 #Using the GS and MM measures, we can identify genes that have a high significance for weight as well as high module membership in interesting modules
 modNames
-module = "turquoise" #pode ver o modulo
+module = "nameofmodule" #STUDIED MODULE
 column = match(module, modNames);
 moduleGenes = moduleColors==module;
 sizeGrWindow(7, 7);
 par(mfrow = c(1,1));
 verboseScatterplot(abs(geneModuleMembership[moduleGenes, column]),
                    abs(geneTraitSignificance[moduleGenes, 1]),
-                   xlab = paste("Associação do analito ao módulo"),
-                   ylab = "Significância do analito para CAR",
-                   main = paste("Módulo Turquoise\n"),
+                   xlab = paste("Module Membership"),
+                   ylab = "Gene Significance",
+                   main = paste("STUDIED MODULE\n"),
                    cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2, col = "black")
 #
 propVarExplained(datExprM, mergedColors, MEs, corFnc = "cor", corOptions = "use = 'p'")
@@ -238,8 +236,8 @@ geneInfo0 <- data.frame(featureID = names(datExpr),
                        moduleColor = moduleColors,
                        geneTraitSignificance,
                        GSPvalue)
-# Order modules by their significance for CAR
-modOrder = order(-abs(cor(MEs, RFI, use = "p")));
+# Order modules by their significance for TRAIT
+modOrder = order(-abs(cor(MEs, TRAIT, use = "p")));
 # Add module membership information in the chosen order
 for (mod in 1:ncol(geneModuleMembership))
 {
@@ -252,11 +250,12 @@ for (mod in 1:ncol(geneModuleMembership))
 # Order the genes in the geneInfo variable first by module color, then by geneTraitSignificance
 geneOrder = order(geneInfo0$moduleColor, -abs(geneInfo0$GS.RFI));
 geneInfo = geneInfo0[geneOrder, ]
-write.csv(geneInfo, file = "../../../../../../../RESULTADOS/wgcna/positivo/analitoInfo.csv")
+write.csv(geneInfo, file = "PATHWAY/FILE.csv")
 #
 #
-#SELECTING MMM > 0.6 intramodule and < 0.6 in others modules
+#SELECTING MM > 0.6 intramodule and < 0.6 in others modules
 #DECIDE IF YOU WILL APPLY THIS PART OR NOT!!!!
+#MMturquoise would be replaced using the significance module
 genes.total <- data.frame(geneModuleMembership$MMturquoise >0.5 & moduleColors=="turquoise" & (apply(!geneModuleMembership[,c(1:18,20:22)] <0.5,1,sum)))
 #
 colnames(genes.total) <- c('MMturquoise')
@@ -269,7 +268,7 @@ genes.total <- test.total[test.total$MMturquoise== T,]
 genes.turquoise <-test.total[test.total$MMturquoise==T,]
 #
 #
-#The first 3 columns are from the MM of the modules, the next 16 are my samples
+#The first 3 columns are from the MM of the modules, the next N columns are my samples
 genes.turquoise <- genes.turquoise[,2:14]
 #
 #
@@ -280,14 +279,12 @@ MEs.total.blue <- MEs.totalselect[5,]
 MEs.total.darktur <- MEs.totalselect[7,]
 MEs.total.turq <- MEs.totalselect[18,]
 #
-#
+#DECIDE IF YOU WILL USE THIS PART OR NOT
 #Create a barplot of one module, with samples on the x-axis (one bar per sample), colored per group (in my case three groups of 12 samples).
-#(Its a barplot which is also in my paper about sheep muscling)
 color = c(rep ("black",8), rep ("grey60", 8))
 barplot(MEs.total.grey, col=color,space=c(rep(0.1,7), 0.5, rep(0.1,6)), cex.axis=1.5)
 title(main = list("Grey60 Module", font = 2), cex.main=2, ylab="intensity (module eigengene)", cex.lab=1.5)
 #
-##tem que arrumar a ordem das amostras pra fazer esse!!
 color = c(rep ("darkgreen",8), rep ("green", 8))
 barplot(MEs.total.darktur, col=color,space=c(rep(0.1,7), 0.5, rep(0.1,6)), cex.axis=1.5)
 title(main = list("DarkTurq Module", font = 2), cex.main=2, ylab="intensity (module eigengene)", cex.lab=1.5)
@@ -305,11 +302,10 @@ write.table (genes.turquoise, "../genesTurquoise.txt", sep="\t")
 #Network visualization using WGCNA functions#
 #############################################
 #
-#
 #Visualizing the gene network
 # Calculate topological overlap anew: this could be done more efficiently by saving the TOM
 # calculated during module detection, but let us do it again here.
-#dissTOM = 1-TOMsimilarityFromExpr(datExpr, power = 7);
+#dissTOM = 1-TOMsimilarityFromExpr(datExpr, power = NUMBER);
 # Transform dissTOM with a power to make moderately strong connections more visible in the heatmap
 #plotTOM = dissTOM^7;
 # Set diagonal to NA for a nicer plot
@@ -320,11 +316,11 @@ write.table (genes.turquoise, "../genesTurquoise.txt", sep="\t")
 #
 #
 ###############
-#     CAR     #
+#    TRAIT     #
 ###############
-# Isolate RFI from the traits
-#RIG = as.data.frame(datTraits$RIG);
-#names(RIG) = "RIG"
+# Isolate YOUR TRAIT from the traits
+#TRAIT = as.data.frame(datTraits$TRAIT);
+#names(TRAIT) = "TRAIT"
 # Add the RFI to existing module eigengenes
 MET = orderMEs(cbind(MEs, RFI))
 # Plot the relationships among the eigengenes and the trait
@@ -342,27 +338,12 @@ par(cex = 1.0)
 plotEigengeneNetworks(MET, "Eigengene adjacency heatmap", marHeatmap = c(3,4,2,2),
                       plotDendrograms = FALSE, xLabelsAngle = 90)
 #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
-#Exporting a gene network to external visualization software#
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#Developed by Pamela Almeida Alexandre
-#
-#names <- read.table ("names.txt", sep="\t")
-#names (names) = c ("geneID", "geneNames")
-#annot <- data.frame (geneInfo$featureID)
-#names (annot) <- c ("geneID")
-#annot <- merge (geneID, names, by="geneID", all=T)
-#write.table (annot, "annot.txt", sep="\t")
-#
-# Read in the annotation file
-#annot = read.table ("annot.txt", sep="\t", header=T);
-#
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #                   Exporting to Cytoscape                 #
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #
 # Select modules
-modules <- c("turquoise");
+modules <- c("turquoise");#example
 # Select module probes
 probes <- names(datExpr)
 inModule <- is.finite(match(moduleColors, modules));
@@ -384,7 +365,22 @@ cyt = exportNetworkToCytoscape(modTOM,
 #calcular intramodular connectivity
 IntraModularConn <- intramodularConnectivity(adjacency, moduleColors, scaleByMax = FALSE)
 IntraModularConn$moduleColors <- moduleColors
-write.table (IntraModularConn, "../../IntraModularCon.txt", sep="\t")
+write.table (IntraModularConn, "PATHWAY/FILE.txt", sep="\t")
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#Exporting a gene network to external visualization software#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#Developed by Pamela Almeida Alexandre
+#
+#names <- read.table ("names.txt", sep="\t")
+#names (names) = c ("geneID", "geneNames")
+#annot <- data.frame (geneInfo$featureID)
+#names (annot) <- c ("geneID")
+#annot <- merge (geneID, names, by="geneID", all=T)
+#write.table (annot, "annot.txt", sep="\t")
+#
+# Read in the annotation file
+#annot = read.table ("annot.txt", sep="\t", header=T);
+#
 
 #That's all Folks!!
 q()
