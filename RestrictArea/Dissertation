@@ -1,0 +1,182 @@
+---
+title: Genetic characterization related to meat tenderness in Nellore cattle using
+  data omics integration
+author: "Francisco José de Novais"
+date: "august 2017- january 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+enconding ='UTF-8'
+library (dplyr)
+library(plyr)
+```
+
+<img src="C:\Users\FJNOVAIS\Pictures\noticias_1512563889.icon.jpg" width="60" align="left">
+
+<img src="C:\Users\FJNOVAIS\Pictures\servletrecuperafoto.png" align="right" width="80">
+
+***
+## DISSERTATION (TESE DE DOUTORADO){align=center}
+***
+
+This is an R Markdown document of **Francisco's research**.
+Used for **personal presentations and Lab feedback**.
+
+More information acess my [Github](https://github.com/fjnovais).
+
+**Advisor**: Luiz Lehmann Coutinho (ESALQ/USP-Brazil);
+
+**Co-Advisor**: Gota Morota (VT-USA).
+
+> 
+The script has miscellaneous configurations and functions created or adapted for my project.
+>
+
+####{align=justify}
+
+
+The Project has 2 main hypotesis:
+
+**Hypothesis 1**: Multivariate methods generate biological relationship between the molecules and construct networks among them. (sRCCA and sPLS)
+
+**Hypothesis 2**: Machine-learning generate GEBV using functional genomics.(Bayesian Network, Artificial Neural Network, support vector machine, kernel matrix transformation, etc)
+
+```{r, include=FALSE}
+getwd()
+setwd("C:/Users/FJNOVAIS/Desktop/ESALQ/DOUTORADO/ANALISE/DOUTORADO/DOUTORADO_script/")
+```
+
+***
+#<span style="color:grey">AVAILABLE DATA</span> {align=center}
+***
+
+#{align=justify}
+### GENOME REFERENCE: <span style="color:darkred">Bos taurus ARS-UCD1.2</span>
+
+
+### - SNP 
+#### **Data from Pollyana dissertation (FAPESP 10/06515-4)**
+
+-380 animals/BovineHD BeadChip 770k/ sample call rate(>0.9);heterozigosity(<0.4);autossomics; SNP call rate (>0.85);MAF(0.01);
+
+**TOTAL: 449,363 SNP's**
+
+*Status*
+
+* *Aline converted to new genome;*
+* *Take data with Aline.*
+
+###- CNV
+#### **Data from Vinicius thesis (FAPESP 12/23717-5)**
+published: SILVA, et al (2016)
+
+-380 animals /using PennCNV from genotyped animals/ cover 6% of genome; 0 (deletion); 1 (partial deletion); >3 (duplication);
+
+```{r CNV data structure, echo=FALSE, include=TRUE}
+CNV<-read.csv("C:/Users/FJNOVAIS/Desktop/ESALQ/DOUTORADO/DADOS/CNV_Vinicius-AlineRefazer/CNV_calls_Silva16_PONE.csv", sep=";")
+CNV_ANIMALS <- as.factor(CNV$NE_id)
+CNV[1:6,1:5]
+```
+
+```{r CNV data structure3, echo=true, include=TRUE}
+nlevels(CNV_ANIMALS)
+```
+
+723 animals, including animals from another EMBRAPA's farms. The project has only 380 animals. **We need to filter animals**
+
+```{r CNV data structure4, echo= FALSE}
+CNV$START_END <- paste(CNV$chr_call,CNV$start_call,CNV$end_call, sep = "-")
+CNV_CNV <- as.factor(CNV$START_END)
+```
+
+```{r CNV data structure5, echo=TRUE, include=TRUE}
+nlevels(CNV_CNV)
+CNV_CNV <-data.frame (count(CNV_CNV))#CNV has missing values
+head(CNV_CNV)
+```
+
+13096 CNV's, some are the same region but with diferent lengths. **We need to work with CNVR's**.
+
+**TOTAL: ? CNVR's**
+
+*Status*
+
+* *Filter animals;*
+* *Redo PennCNV using new genome; EMAIL to Vinicius*
+* *calculate CNVR.*
+
+###- miRNA
+
+#### **Data from Berna thesis (FAPESP 14/00943-5)**
+
+- 180 animals/ Ilumina MiSeq (single-end). 36pb/ MiSeq *v2*-50 cycles/ MiSeq *v3*-150 cycles/ mirDeep2 (Friedlander et al, 2012)
+
+```{r miRNA, echo=FALSE}
+miRNAs<- read.delim("C:/Users/FJNOVAIS/Desktop/ESALQ/DOUTORADO/DADOS/miRNA_AlineNewGenome/miRNAs_expressed_all_samples_17_07_2018_t_23_55_10.clean.annotated.ARS.UCD1.2.txt")
+```
+```{r miRNA2 ,echo=TRUE}
+dim(miRNAs)
+```
+- 370 animals
+
+**TOTAL: 465 miRNA's**
+```{r miRNA2, echo=FALSE}
+rownames (miRNAs)<-miRNAs$miRNA.id
+miRNAs<- as.data.frame(t(miRNAs))
+miRNAs <- miRNAs[-1,]
+miRNAs[1:6,c(1:3,7:8)]
+```
+
+*Status*
+
+* *Data normalization;*
+* *Ready to perform analysis.*
+
+###-mRNA
+
+#### **Data from Tássia thesis (FAPESP 12/23934-6)**
+
+-200 animals / 100mg muscle (Trizol)/ HTSeq *v.0.5.7p2* / CuffLinks; Normalization Transcript per Million (TPM).
+
+$$
+ TPM= {A}\times\frac{1}{\sum(A)}\times{10^6}
+$$
+
+Where A= `Total reads mapped to gene.10³/ gene length in bp`
+
+```{r mRNA, echo=FALSE}
+mRNA<- read.delim("C:/Users/FJNOVAIS/Desktop/ESALQ/DOUTORADO/DADOS/mRNA_AlineRefazer/all_TPM_values.txt")
+```
+```{r mRNA2, echo=FALSE}
+rownames (mRNA)<-mRNA$gene_id
+mRNA<- as.data.frame(t(mRNA))
+mRNA <- mRNA[-1,]
+mRNA[1:6,1:3]
+```
+**TOTAL: ? genes**
+
+*Status*
+
+* *Aline converted to new genome;*
+* *Take data with Aline.*
+
+###-Protein
+
+#### **Data from Mirele post-doc - CNPq scholarship**
+
+-65(40) animals/ 500mg muscle / Urea 8M/ Thiourea 2M/ 2% CHAMPS/ 1% DTT/ 1% protease inhibitor(Sigma)/ 10,000xg;30min; 4ºC/nanoUPLC tandem nanoESI-HDMS^e^ with 50-2,000 spectro range/ ProteinLynx.
+
+**TOTAL: 9,110 peptides and 2,529 proteins**
+
+*Status*
+
+* *Concatenate all samples in a Matrix*
+
+###-Metabolites
+
+#### **Data from Mirele post-doc - CNPq scholarship**
+
+-65 animals / 500 mg muscle/ methanol:H2O:Chroloform (2.5:1:1)/ Gas Chromatography 789A (Agilent)/ 
+
